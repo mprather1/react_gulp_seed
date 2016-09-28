@@ -5,6 +5,6 @@ var Parent = React.createClass({
         <div> This is the parent. </div>
         <Child name="child"/>
       </div>
-    )
+    );
   }
 });

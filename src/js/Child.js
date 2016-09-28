@@ -4,6 +4,6 @@ var Child = React.createClass({
       <div>
         and this is the <b>{this.props.name}</b>.
       </div>
-    )
+    );
   }
 });

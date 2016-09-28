@@ -3,6 +3,8 @@ var concat = require('gulp-concat');
 var uglify = require("gulp-uglify");
 var react = require("gulp-react");
 var htmlreplace = require("gulp-html-replace");
+var jshint = require('gulp-jshint');
+var cache = require('gulp-cached');
 
 var path = {
   HTML: 'src/index.html',
@@ -13,6 +15,25 @@ var path = {
   DEST_BUILD: 'dist/build',
   DEST: 'dist'
 };
+
+gulp.task('jshint', function() {
+  var stream = gulp.src(path.JS)
+    .pipe(cache('jshint'))
+    .pipe(react())
+    .on('error', function(err) {
+      console.error('JSX ERROR in ' + err.fileName);
+      console.error(err.message);
+      this.end();
+    })
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+
+  if (process.env.CI) {
+    stream = stream.pipe(jshint.reporter('fail'));
+  }
+
+  return stream;
+});
 
 gulp.task('transform', function(){
   gulp.src(path.JS)
@@ -43,7 +64,7 @@ gulp.task('replaceHTML', function(){
 });
 
 gulp.task('watch', function() {
-  gulp.watch(path.ALL, ['transform', 'copy'])
+  gulp.watch(path.ALL, ['jshint', 'transform', 'copy'])
 });
 
 gulp.task('default', ['watch']);
